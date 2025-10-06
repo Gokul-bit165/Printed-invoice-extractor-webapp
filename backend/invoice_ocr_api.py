@@ -29,7 +29,7 @@ try:
     # even after installing Tesseract, UNCOMMENT the line below and replace 
     # the path with the location of your tesseract.exe file.
     # Example for Windows:
-    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     
 except ImportError:
     HAS_OCR_DEPS = False
@@ -113,7 +113,7 @@ def preprocess_image(image_bytes: bytes) -> Image.Image:
         # Try decoding as grayscale if color fails (some TIFF formats)
         img_cv = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
         if img_cv is None:
-             raise ValueError("Could not decode image bytes into OpenCV format.")
+              raise ValueError("Could not decode image bytes into OpenCV format.")
         # Convert grayscale to 3-channel for consistency
         img_cv = cv2.cvtColor(img_cv, cv2.COLOR_GRAY2BGR)
 
@@ -284,6 +284,9 @@ def parse_invoice_data(raw_text: str) -> ParsedInvoice:
                         parsed_data[field] = value
                 except IndexError:
                     print(f"LOG: Field '{field}' regex matched but group(1) failed.")
+                except Exception:
+                    # In case the regex matched, but the value was non-capturing
+                    pass
             else:
                 print(f"LOG: Field '{field}' could not be parsed.")
 
@@ -349,11 +352,15 @@ app = FastAPI(
     description="Backend for extracting structured data from invoice images/PDFs."
 )
 
-# CORS configuration for the frontend
+# FIX: CORS configuration updated to explicitly allow the Hugging Face Space URL.
 app.add_middleware(
     CORSMiddleware,
-    # Allow all origins, useful for development where React/Streamlit runs on a different port
-    allow_origins=["*"], 
+    # Explicitly list the allowed origins to resolve the 403 Forbidden error
+    allow_origins=[
+        "https://huggingface.co/spaces/GokulV/invoice-extractor-frontend",
+        "http://localhost:8501",  # Local development for Streamlit
+        "http://localhost:8000"   # Local development for FastAPI testing
+    ], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -441,10 +448,10 @@ async def download_csv(invoice_id: str):
 # --- 8. RUN APPLICATION ---
 if __name__ == "__main__":
     if not HAS_OCR_DEPS:
-         print("\n=======================================================")
-         print("   MOCK MODE ACTIVE: Using placeholder text for OCR.   ")
-         print("   Install required dependencies (pytesseract, opencv) ")
-         print("   and ensure Tesseract is installed on your system.   ")
-         print("=======================================================\n")
-         
+          print("\n=======================================================")
+          print("  MOCK MODE ACTIVE: Using placeholder text for OCR.   ")
+          print("  Install required dependencies (pytesseract, opencv) ")
+          print("  and ensure Tesseract is installed on your system.   ")
+          print("=======================================================\n")
+          
     uvicorn.run(app, host="0.0.0.0", port=8000)
