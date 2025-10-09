@@ -29,7 +29,7 @@ try:
     # even after installing Tesseract, UNCOMMENT the line below and replace 
     # the path with the location of your tesseract.exe file.
     # Example for Windows:
-    # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     
 except ImportError:
     HAS_OCR_DEPS = False

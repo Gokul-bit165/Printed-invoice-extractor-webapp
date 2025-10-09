@@ -89,7 +89,13 @@ Provides a Python-based interface for interacting with the FastAPI backend.
 2. **Start the frontend:**
     ```bash
     streamlit run invoice_streamlit_app.py
-    ```
+
+    3. **Process invoices:**
+        - In the Streamlit app, upload your invoice image or PDF.
+        - The backend will extract and parse invoice data automatically.
+        - Review the structured results in the app.
+        - Download the extracted data as a CSV file for further use.
+
 3. **Upload an invoice:**
     - Use Streamlit UI to upload invoice image or PDF.
     - View extracted data and download CSV.
